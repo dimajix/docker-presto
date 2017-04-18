@@ -1,0 +1,18 @@
+<configuration>
+  <property>
+      <!--The name of the default file system.-->
+      <name>fs.defaultFS</name>
+      <value>hdfs://[% HDFS_NAMENODE_HOSTNAME %]:8020</value>
+  </property>
+
+  <property>
+      <name>fs.alluxio.impl</name>
+      <value>alluxio.hadoop.FileSystem</value>
+  </property>
+  <property>
+      <name>fs.AbstractFileSystem.alluxio.impl</name>
+      <value>alluxio.hadoop.AlluxioFileSystem</value>
+      <description>The Alluxio AbstractFileSystem (Hadoop 2.x)</description>
+  </property>
+</configuration>
+

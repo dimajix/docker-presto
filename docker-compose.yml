@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+
+  presto-client:
+    container_name: dmx-presto-client
+    hostname: presto-client
+    image: dimajix/presto:latest
+    build: 
+      context: .
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+    env_file:
+      - docker-compose.env
+    environment:
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+
+  presto-coordinator:
+    container_name: dmx-presto-coordinator
+    hostname: presto-coordinator
+    image: dimajix/presto:latest
+    command: coordinator
+    env_file:
+      - docker-compose.env
+    environment:
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+
+  presto-worker-0:
+    container_name: dmx-presto-worker-0
+    hostname: presto-worker-0
+    image: dimajix/presto:latest
+    command: worker
+    env_file:
+      - docker-compose.env
+    environment:
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+
+networks:
+  default:
+    external:
+      name: dimajix
+

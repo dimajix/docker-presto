@@ -1,0 +1,31 @@
+<configuration>
+	
+	<!-- BOF NameNode **************************************************** -->
+	<property>
+		<!-- general default replication -->
+        <name>dfs.replication</name>
+        <value>[% HDFS_REPLICATION_FACTOR %]</value>
+    </property>
+    <property>
+    	<!-- max number of replications of file that user can set on upload into hdfs -->
+        <name>dfs.replication.max</name>
+        <value>[% HDFS_REPLICATION_FACTOR %]</value>
+    </property>
+    <property>
+    	<!-- minimum succesfully written replicas to accept file as uploaded -->
+        <name>dfs.namenode.replication.min</name>
+        <value>1</value>
+    </property>
+    <property>
+    	<!-- HDFS does not check user permissions (however linux does it anyway) -->
+        <name>dfs.permissions.enabled</name>
+        <value>false</value>
+    </property>
+	<property>
+        <!-- The default block size for new files, in bytes.  -->
+		<name>dfs.blocksize</name>
+		<value>268435456</value>
+	</property>
+	<!-- BOF NameNode **************************************************** -->
+
+</configuration>
