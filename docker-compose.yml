@@ -6,6 +6,7 @@ services:
     container_name: dmx-presto-client
     hostname: presto-client
     image: dimajix/presto:latest
+    command: client
     build: 
       context: .
       args:

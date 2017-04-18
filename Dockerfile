@@ -2,7 +2,7 @@ FROM dimajix/java:oracle-8
 MAINTAINER k.kupferschmidt@dimajix.de
 
 ARG BUILD_PRESTO_VERSION=0.173
-ARG BUILD_ALLUXIO_VERSION=1.4.0
+ARG BUILD_ALLUXIO_VERSION=1.5.0-SNAPSHOT
 
 USER root
 
@@ -28,7 +28,7 @@ RUN curl -s https://repo1.maven.org/maven2/com/facebook/presto/presto-cli/${BUIL
 RUN mkdir -p /tmp/build-alluxio \
   && cd /tmp/build-alluxio \
   && git clone https://github.com/Alluxio/alluxio.git . \
-  && git checkout v${BUILD_ALLUXIO_VERSION} \
+  && echo git checkout v${BUILD_ALLUXIO_VERSION} \
   && PROXY_HOST=$(echo $http_proxy | sed -n 's#.*://\(.*\):\(.*\)#\1#p') \
   && PROXY_PORT=$(echo $http_proxy | sed -n 's#.*://\(.*\):\(.*\)#\2#p') \
   && mvn clean package -Ppresto -DskipTests -Dmaven.javadoc.skip=true -DproxyHost=$PROXY_HOST -DproxyPort=$PROXY_PORT \
