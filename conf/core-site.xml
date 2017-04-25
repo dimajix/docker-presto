@@ -2,7 +2,7 @@
   <property>
       <!--The name of the default file system.-->
       <name>fs.defaultFS</name>
-      <value>hdfs://[% HDFS_NAMENODE_HOSTNAME %]:8020</value>
+      <value>hdfs://[% HDFS_NAMENODE_HOSTNAME %]:[% HDFS_NAMENODE_PORT %]</value>
   </property>
 
   <property>

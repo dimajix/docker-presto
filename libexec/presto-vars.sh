@@ -8,6 +8,7 @@ export PRESTO_DATA_DIR=${PRESTO_DATA_DIR=/var/presto/data}
 
 # HDFS Settings
 export HDFS_NAMENODE_HOSTNAME=${HDFS_NAMENODE_HOSTNAME=hadoop-namenode}
+export HDFS_NAMENODE_PORT=${HDFS_NAMENODE_PORT=8020}
 
 # Settings for accessing Hive
 export HIVE_METASTORE_HOST=${HIVE_METASTORE_HOST=hive-metatore}
