@@ -5,6 +5,7 @@
         <value>[% HDFS_DEFAULT_FS %]</value>
     </property>
 
+    <!-- Alluxio integration -->
     <property>
         <name>fs.alluxio.impl</name>
         <value>alluxio.hadoop.FileSystem</value>
@@ -14,7 +15,6 @@
         <value>alluxio.hadoop.AlluxioFileSystem</value>
         <description>The Alluxio AbstractFileSystem (Hadoop 2.x)</description>
     </property>
-
 
     <!-- S3 relates setting -->
     <property>
