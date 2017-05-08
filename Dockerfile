@@ -1,4 +1,4 @@
-FROM dimajix/java:oracle-8
+FROM dimajix/jdk:oracle-8
 MAINTAINER k.kupferschmidt@dimajix.de
 
 ARG BUILD_PRESTO_VERSION=0.171
@@ -12,20 +12,22 @@ ENV PRESTO_HOME=/opt/presto \
 	PRESTO_PREFIX=/opt/presto \
 	PRESTO_CONF_DIR=/etc/presto
 
-RUN apt-get install -y --no-install-recommends git maven python uuid less
+RUN apt-get update \
+   && apt-get install -y --no-install-recommends git python uuid less \
+   && apt-get clean \
+   && rm -rf /var/lib/apt/lists/*
 
 # Download and install Presto
 RUN curl -s https://repo1.maven.org/maven2/com/facebook/presto/presto-server/${BUILD_PRESTO_VERSION}/presto-server-${BUILD_PRESTO_VERSION}.tar.gz \
     | tar -xz -C /opt \
     && ln -s presto-server-${BUILD_PRESTO_VERSION} ${PRESTO_PREFIX} \
     && mkdir -p ${PRESTO_CONF_DIR} \
-    && ln -s ${PRESTO_CONF_DIR} ${PRESTO_HOME}/etc
-
-RUN curl -s https://repo1.maven.org/maven2/com/facebook/presto/presto-cli/${BUILD_PRESTO_VERSION}/presto-cli-${BUILD_PRESTO_VERSION}-executable.jar \
+    && ln -s ${PRESTO_CONF_DIR} ${PRESTO_HOME}/etc \
+    && curl -s https://repo1.maven.org/maven2/com/facebook/presto/presto-cli/${BUILD_PRESTO_VERSION}/presto-cli-${BUILD_PRESTO_VERSION}-executable.jar \
     > ${PRESTO_HOME}/bin/presto \
     && chmod a+rx ${PRESTO_HOME}/bin/presto
 
-COPY build/ /tmp/build/
+COPY build/ /tmp/build
 
 # Download and install Alluxio for Presto
 RUN mkdir -p /tmp/build-alluxio \
@@ -38,7 +40,8 @@ RUN mkdir -p /tmp/build-alluxio \
   && mvn clean package -Ppresto -DskipTests -Dhadoop.version=${BUILD_HADOOP_VERSION} -Dmaven.javadoc.skip=true -Dcheckstyle.skip -Dlicense.skip -DskipTests -Dfindbugs.skip -DproxyHost=$PROXY_HOST -DproxyPort=$PROXY_PORT \
   && cd - \
   && cp /tmp/build-alluxio/core/client/target/alluxio-core-client-${BUILD_ALLUXIO_VERSION}-jar-with-dependencies.jar /opt/presto/plugin/hive-hadoop2 \
-  && rm -rf /tmp/build-alluxio
+  && rm -rf /tmp/build-alluxio \
+  && rm -rf /root/.m2
 
 # copy configs and binaries
 COPY bin/ /opt/docker/bin/
