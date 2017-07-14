@@ -2,13 +2,14 @@ FROM dimajix/jdk:oracle-8
 MAINTAINER k.kupferschmidt@dimajix.de
 
 ARG BUILD_PRESTO_VERSION=0.171
-ARG BUILD_ALLUXIO_VERSION=1.4.0
-ARG BUILD_HADOOP_VERSION=2.7.3
+ARG BUILD_ALLUXIO_VERSION=1.5.0
+ARG BUILD_HADOOP_VERSION=2.8.0
 
 USER root
 
 # Set Hadoop and Java environment
-ENV PRESTO_HOME=/opt/presto \
+ENV ALLUXIO_HOME=/opt/alluxio \
+    PRESTO_HOME=/opt/presto \
 	PRESTO_PREFIX=/opt/presto \
 	PRESTO_CONF_DIR=/etc/presto
 
@@ -27,21 +28,13 @@ RUN curl -s https://repo1.maven.org/maven2/com/facebook/presto/presto-server/${B
     > ${PRESTO_HOME}/bin/presto \
     && chmod a+rx ${PRESTO_HOME}/bin/presto
 
-COPY build/ /tmp/build
-
-# Download and install Alluxio for Presto
-RUN mkdir -p /tmp/build-alluxio \
-  && cd /tmp/build-alluxio \
-  && git clone https://github.com/Alluxio/alluxio.git . \
-  && git checkout v${BUILD_ALLUXIO_VERSION} \
-  && cp /tmp/build/alluxio-core-client-${BUILD_ALLUXIO_VERSION}.xml core/client/pom.xml \
-  && PROXY_HOST=$(echo $http_proxy | sed -n 's#.*://\(.*\):\(.*\)#\1#p') \
-  && PROXY_PORT=$(echo $http_proxy | sed -n 's#.*://\(.*\):\(.*\)#\2#p') \
-  && mvn clean package -Ppresto -DskipTests -Dhadoop.version=${BUILD_HADOOP_VERSION} -Dmaven.javadoc.skip=true -Dcheckstyle.skip -Dlicense.skip -DskipTests -Dfindbugs.skip -DproxyHost=$PROXY_HOST -DproxyPort=$PROXY_PORT \
-  && cd - \
-  && cp /tmp/build-alluxio/core/client/target/alluxio-core-client-${BUILD_ALLUXIO_VERSION}-jar-with-dependencies.jar /opt/presto/plugin/hive-hadoop2 \
-  && rm -rf /tmp/build-alluxio \
-  && rm -rf /root/.m2
+# Download and install Alluxio client
+RUN curl -sL --retry 3 "http://downloads.alluxio.org/downloads/files/${BUILD_ALLUXIO_VERSION}/alluxio-${BUILD_ALLUXIO_VERSION}-hadoop-2.8-bin.tar.gz" \
+   | tar xz -C /opt \
+   && ln -s /opt/alluxio-${BUILD_ALLUXIO_VERSION}-hadoop-2.8 ${ALLUXIO_HOME} \
+   && chown -R root:root ${ALLUXIO_HOME} \
+   && rm -f  ${HADOOP_PREFIX}/share/hadoop/common/lib/slf4j-log4j12*.jar \
+   && ln -s /opt/alluxio/client/presto/alluxio-${BUILD_ALLUXIO_VERSION}-presto-client.jar ${PRESTO_PREFIX}/plugin/hive-hadoop2/
 
 # copy configs and binaries
 COPY bin/ /opt/docker/bin/
